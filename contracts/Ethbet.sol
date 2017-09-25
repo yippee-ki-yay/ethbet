@@ -64,7 +64,7 @@ contract Ethbet {
         balances[msg.sender] -= _amount;
         
         //Move the funds from our contrat address to the requested user
-        token.transferFrom(this, msg.sender, _amount);
+        token.transfer(msg.sender, _amount);
         
         Withdraw(msg.sender, _amount);
     }
@@ -102,6 +102,8 @@ contract Ethbet {
         feeAddress = _feeAddress;
     }
     
-    
+    function balanceOf(address sender) constant public returns(uint256) {
+        return balances[sender];
+    }
     
 }
