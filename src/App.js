@@ -1,11 +1,12 @@
-import React, { Component } from 'react'
-import EthbetContract from '../build/contracts/Ethbet.json'
-import getWeb3 from './utils/getWeb3'
+import React, { Component } from 'react';
+import EthbetContract from '../build/contracts/Ethbet.json';
+import EthbetTokenContract from '../build/contracts/EthbetToken.json';
+import getWeb3 from './utils/getWeb3';
 
-import './css/oswald.css'
-import './css/open-sans.css'
-import './css/pure-min.css'
-import './App.css'
+import './css/oswald.css';
+import './css/open-sans.css';
+import './css/pure-min.css';
+import './App.css';
 
 class App extends Component {
   constructor(props) {
@@ -28,18 +29,22 @@ class App extends Component {
       })
 
       // Instantiate contract once web3 provided.
-      this.instantiateContract()
+      this.instantiateContract();
     })
     .catch(() => {
       console.log('Error finding web3.')
     })
   }
 
-  instantiateContract() {
+  async instantiateContract() {
 
     const contract = require('truffle-contract');
     const ethbetContract = contract(EthbetContract);
     ethbetContract.setProvider(this.state.web3.currentProvider);
+    
+    const instance = await ethbetContract.deployed();
+
+    console.log(instance);
 
   }
 
