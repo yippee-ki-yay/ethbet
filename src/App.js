@@ -16,7 +16,8 @@ class App extends Component {
     super(props);
 
     this.state = {
-      web3: null
+      web3: null,
+      ethbetInstane: null
     }
   }
 
@@ -25,13 +26,13 @@ class App extends Component {
     // See utils/getWeb3 for more info.
 
     getWeb3
-    .then(results => {
+    .then(async (results) => {
       this.setState({
         web3: results.web3
       })
 
       // Instantiate contract once web3 provided.
-      this.instantiateContract();
+      await this.instantiateContract();
     })
     .catch(() => {
       console.log('Error finding web3.')
@@ -46,7 +47,9 @@ class App extends Component {
     
     const instance = await ethbetContract.deployed();
 
-    console.log(instance);
+    this.setState({
+      ethbetInstane: instance
+    });
 
   }
 
