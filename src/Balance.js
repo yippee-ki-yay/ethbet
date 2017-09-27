@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import EthbetToken from '../build/contracts/EthbetToken.json';
+import Ethbet from '../build/contracts/Ethbet.json';
 
 import contract from 'truffle-contract';
 import getWeb3 from './utils/getWeb3';
@@ -16,7 +17,7 @@ class Balance extends Component {
             withdraw: '',
             balance: 0,
             admin: '',
-            ethbetInstane: props.ethbetInstane,
+            ethbetInstane: null,
             tokenInstance: null,
             web3: null
         };
@@ -51,10 +52,17 @@ class Balance extends Component {
         const ethbetToken = contract(EthbetToken);
         ethbetToken.setProvider(this.state.web3.currentProvider);
         
+        const ethbetContract = contract(Ethbet);
+        ethbetContract.setProvider(this.state.web3.currentProvider);
+
+        const ethbetInstance = await ethbetContract.deployed();
         const tokenInstance = await ethbetToken.deployed();
            
+        await this.getDepositAmount(tokenInstance, ethbetInstance, this.state.admin);
+
         this.setState({
-            tokenInstance
+            tokenInstance,
+            ethbetInstance
         });
     }
 
@@ -65,24 +73,49 @@ class Balance extends Component {
         const tokenInstance = this.state.tokenInstance;
         
         const deposit = this.state.deposit;
+        const ethbetInstance = this.state.ethbetInstane;
 
         console.log(deposit);
 
-        const approve = await tokenInstance.approve.sendTransaction("0x73d23219be42d4cadb8a7ec8cffae432464bcb41", parseInt(deposit, 10), {from: admin, value: 0});
+        const approve = await tokenInstance.approve.sendTransaction(ethbetInstance.address, parseInt(deposit, 10), {from: admin, value: 0});
 
         console.log(approve);
 
         //We'll have to wait for it to get mined
-        const contractBalance = await tokenInstance.allowance(admin, "0x73d23219be42d4cadb8a7ec8cffae432464bcb41");
+        await this.getDepositAmount(tokenInstance, ethbetInstance, admin);
+
+    }
+
+    getDepositAmount = async (tokenInstance, ethbetInstance, admin) => {
+        const contractBalance = await tokenInstance.allowance.call(admin, ethbetInstance.address);
 
         this.setState({
             balance: contractBalance.valueOf()
         });
-
     }
 
-    withdrawTokens = () => {
+    withdrawTokens = async () => {
 
+        const withdraw = this.state.withdraw;
+        const admin = this.state.admin;
+        const ethbetInstance = this.state.ethbetInstance;
+
+        console.log(ethbetInstance);
+
+        try {
+            //await ethbetInstance.withdraw.sendTransaction(10, {from: admin});
+            const balance = await ethbetInstance.balanceOf(admin);
+
+            console.log(balance.valueOf());
+        } catch(err) {
+            console.log(err);
+        }
+
+        // const balance = await ethbetInstance.balanceOf(admin);
+
+        // this.setState({
+        //     balance: balance.valueOf()
+        // });
     }
 
     handleChange = (event) => {
