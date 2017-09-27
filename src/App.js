@@ -4,15 +4,16 @@ import getWeb3 from './utils/getWeb3';
 
 // import Header from './Header';
 import BetMaker from './BetMaker';
-import BetsHistory from "./BetsHistory";
+// import BetsHistory from "./BetsHistory";
 import ActiveBets from "./ActiveBets";
+import Balance from './Balance';
 
 import './css/custom.css';
 import './css/bootstrap.min.css';
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       web3: null
@@ -55,13 +56,14 @@ class App extends Component {
         {/*<Header />*/}
         <div className="container">
           <div className="row front-row">
+            <Balance />
             <BetMaker />
             <ActiveBets />
           </div>
 
-          <div className="row">
+          {/*<div className="row">
             <BetsHistory />
-          </div>
+          </div>*/}
 
         </div>
       </div>
