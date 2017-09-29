@@ -43,8 +43,6 @@ class Balance extends Component {
             });
 
         });
-
-
     }
 
      instantiateContract = async () => {
@@ -128,7 +126,7 @@ class Balance extends Component {
         return (
                 <div className="col-lg-4">
                     <div className="well">
-                        <legend>Balance: { this.state.balance } </legend>
+                        <legend>Balance: { this.state.balance } EBET</legend>
 
                         <div className="row">
                             <div className="col-lg-7">

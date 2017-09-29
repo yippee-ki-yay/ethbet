@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 
+import Ethbet from '../build/contracts/Ethbet.json';
+
+import contract from 'truffle-contract';
+import getWeb3 from './utils/getWeb3';
+
 class BetMaker extends Component {
 
     constructor(props) {
@@ -7,12 +12,65 @@ class BetMaker extends Component {
 
         this.state = {
             value: '',
-            edge: ''
+            edge: '',
+            admin: '',
+            web3: null,
+            ethbetInstance: null
         };
     }
 
-    makeBet = () => {
+    componentDidMount() {
 
+        getWeb3
+        .then(async (results) => {
+            this.setState({
+                web3: results.web3
+            })
+
+            results.web3.eth.getAccounts( async (error, accounts) => {
+
+                this.setState({
+                    admin: accounts[0]
+                });
+
+                // Instantiate contract once web3 provided.
+                await this.instantiateContract();
+
+            });
+
+        });
+    }
+
+    makeBet = async () => {
+
+        const ethbetInstance = this.state.ethbetInstance;
+        const admin = this.state.admin;
+        const numTokens = this.state.value;
+
+        await ethbetInstance.placeBet.sendTransaction(numTokens, {from: admin});
+
+        //Wait for the block to get mined 
+
+        const balance = await ethbetInstance.balanceOf(admin);
+
+        console.log(balance.valueOf());
+
+        this.setState({
+            value: '',
+            edge: ''
+        });
+    }
+
+    instantiateContract = async () => {
+
+        const ethbetContract = contract(Ethbet);
+        ethbetContract.setProvider(this.state.web3.currentProvider);
+
+        const ethbetInstance = await ethbetContract.deployed();
+            
+        this.setState({
+            ethbetInstance
+        });
     }
 
     handleChange = (event) => {
